@@ -43,7 +43,7 @@ def get_page(symbol: String): List[String] = {
 // extracting the dates and anjusted close prices. The
 // prices need to be transformed into Doubles.
 
-def process_page(symbol: String): List[(String, Double)] = { //works with List string string,problem with numberformat exception adj close
+def process_page(symbol: String): List[(String, Double)] = {
   val v = get_page(symbol).dropRight(1);
   var list = List[(String, Double)]()
   for (i <- 0 until v.size) {
@@ -58,12 +58,12 @@ def process_page(symbol: String): List[(String, Double)] = { //works with List s
 // the dates for when to buy and sell the stocks of that company.
 
 def query_company(symbol: String): (String, String) = {
-  val list = process_page(symbol); //gets date adj close list
+  val list = process_page(symbol);
   var listOfTimes = List[Double]()
   for (everyPair <- list) {
     listOfTimes = listOfTimes :+ everyPair._2
   }
-  val x = trade_times(listOfTimes) //finds index of minTime and then maxTime
+  val x = trade_times(listOfTimes)
   (list(x._1)._1, list(x._2)._1)
 }
 
