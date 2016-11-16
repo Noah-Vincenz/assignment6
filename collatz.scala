@@ -9,24 +9,14 @@
 //    performs the recursion. The function should expect
 //    arguments in the range of 1 to 1 Million.
 
-def collatz(n: Long) = { //check if it was like this initially
-  if (n == 1) {
-    0
-  }
-  else {
-    collatzFinish(n ,1)
-  }
+def collatz(n: Long): Int = { //check if it was like this initially
+  if (n == 1) 0
+  else collatzFinish(n,1)
 }
 def collatzFinish(input: Long, countIn: Int): Int = {
-  if (input == 1) { //it should return 0 if input == 1
-    countIn
-  }
-  else if (input % 2 == 0){
-    collatzFinish(input/2, countIn+1)
-  }
-  else {
-    collatzFinish(input * 3 + 1, countIn+1)
-  }
+  if (input == 1) countIn
+  else if (input % 2 == 0) collatzFinish(input/2, countIn+1)
+  else collatzFinish(input * 3 + 1, countIn+1)
 }
 //(2)  Complete the collatz bound function below. It should
 //     calculuate how many steps are needed for each number 
