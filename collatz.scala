@@ -9,8 +9,13 @@
 //    performs the recursion. The function should expect
 //    arguments in the range of 1 to 1 Million.
 
-def collatz(n: Long) = {
-  collatzFinish(n ,1)
+def collatz(n: Long) = { //check if it was like this initially
+  if (n == 1) {
+    0
+  }
+  else {
+    collatzFinish(n ,1)
+  }
 }
 def collatzFinish(input: Long, countIn: Int): Int = {
   if (input == 1) { //it should return 0 if input == 1
