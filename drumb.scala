@@ -15,13 +15,40 @@ val rstate_portfolio = List("PLD", "PSA", "AMT", "AIV", "AVB", "BXP", "CBG", "CC
 // 
 // and extracting the first January Adjusted Close price in a year.
 
-def get_first_price(symbol: String, year: Int): Option[Double] = ...
+def get_first_price(symbol: String, year: Int): Option[Double] = {
+  import io.Source
+  var list = List[String]()
+  try {
+    for (everyLine <- Source.fromURL("http://ichart.yahoo.com/table.csv?s=" + symbol + "&a=0&b=1&c=" + year + "&d=1&e=1&f=" + year).getLines) {
+      list = list :+ everyLine
+    }
+    val minDate = list(list.size-1)
+    Some(minDate.split(",")(6).toDouble)
+  } catch {
+    case e: Exception => None
+  }
+}
+
 
 // Complete the function below that obtains all first prices
 // for the stock symbols from a portfolio for the given
 // range of years
 
-def get_prices(portfolio: List[String], years: Range): List[List[Option[Double]]] = ...
+def get_prices(portfolio: List[String], years: Range): List[List[Option[Double]]] = {
+  var listToReturn = List[List[Option[Double]]]()
+  for (year <- years) {
+    var list = List[Option[Double]]()
+    for (symbol <- 0 until portfolio.size) {
+      try {
+        list = list :+ get_first_price(portfolio(symbol), year)
+      } catch {
+        case e: Exception => None
+      }
+    }
+    listToReturn = listToReturn :+ list
+  }
+  listToReturn
+}
 
 // test case
 //val p = get_prices(List("GOOG", "AAPL"), 2010 to 2012)
@@ -31,9 +58,25 @@ def get_prices(portfolio: List[String], years: Range): List[List[Option[Double]]
 // a price in year n and a price in year n+1. The second function calculates
 // all change factors for all prices (from a portfolio).
 
-def get_delta(price_old: Option[Double], price_new: Option[Double]): Option[Double] = ...
+def get_delta(price_old: Option[Double], price_new: Option[Double]): Option[Double] = {
+  try {
+    Some((price_new.get-price_old.get) / price_old.get)
+  } catch {
+    case e: Exception => None
+  }
+}
 
-def get_deltas(data: List[List[Option[Double]]]):  List[List[Option[Double]]] = ...
+def get_deltas(data: List[List[Option[Double]]]):  List[List[Option[Double]]] = {
+  var listToReturn = List[List[Option[Double]]]()
+  for (numberOfYears <- 0 until data.size-1) {
+    var listToAdd = List[Option[Double]]()
+    for (numberOfSymbols <- 0 until data(0).size) {
+      listToAdd = listToAdd :+ get_delta(data(numberOfYears)(numberOfSymbols), data(numberOfYears+1)(numberOfSymbols))
+    }
+    listToReturn = listToReturn :+ listToAdd
+  }
+  listToReturn
+}
 
 // test case using the prices calculated above
 //val d = get_deltas(p)
@@ -46,14 +89,29 @@ def get_deltas(data: List[List[Option[Double]]]):  List[List[Option[Double]]] = 
 // calculations by taking a portfolio, a range of years and a start balance
 // as arguments.
 
-def yearly_yield(data: List[List[Option[Double]]], balance: Long, year: Int): Long = ... 
+def yearly_yield(data: List[List[Option[Double]]], balance: Long, year: Int): Long = {
+  val amountToBeInvested = balance / data(year).size
+  var finalBalance: Long = balance;
+  for (n <- 0 until data(year).size) {
+    finalBalance = finalBalance + (data(year)(n).getOrElse(0.0) * amountToBeInvested).toLong
+  }
+  finalBalance
+}
 
 //test case
 //yearly_yield(d, 100, 0)
 
-def compound_yield(data: List[List[Option[Double]]], balance: Long, year: Int): Long = ... 
+def compound_yield(data: List[List[Option[Double]]], balance: Long, year: Int): Long = {
+  var tempBalance: Long = balance;
+  for (n <- 0 until year) {
+    tempBalance = yearly_yield(data, tempBalance, n)
+  }
+  tempBalance
+}
 
-def investment(portfolio: List[String], years: Range, start_balance: Long): Long = ...
+def investment(portfolio: List[String], years: Range, start_balance: Long): Long = {
+  compound_yield(get_deltas(get_prices(portfolio, years)), start_balance, years.length-1)
+}
 
 
 //test cases for the two portfolios given above
