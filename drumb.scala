@@ -16,7 +16,6 @@ val rstate_portfolio = List("PLD", "PSA", "AMT", "AIV", "AVB", "BXP", "CBG", "CC
 
 def get_first_price(symbol: String, year: Int): Option[Double] = {
   import io.Source
-  var list = List[String]()
   try {
     val arr = Source.fromURL("http://ichart.yahoo.com/table.csv?s=" + symbol + "&a=0&b=1&c=" + year + "&d=1&e=1&f=" + year).mkString.split(",")
     Some(arr(arr.size-1).toDouble)
@@ -85,11 +84,7 @@ def get_deltas(data: List[List[Option[Double]]]):  List[List[Option[Double]]] = 
 // as arguments.
 
 def yearly_yield(data: List[List[Option[Double]]], balance: Long, year: Int): Long = {
-  var finalBalance: Long = balance;
-  for (n <- 0 until data(year).size) {
-    finalBalance = finalBalance + (data(year)(n).getOrElse(0.0) * (balance / data(year).size)).toLong
-  }
-  finalBalance
+  (for (n <- 0 until data(year).size) yield balance + (data(year)(n).getOrElse(0.0) * (balance / data(year).size)).toLong).sum[Long]
 }
 
 //test case
