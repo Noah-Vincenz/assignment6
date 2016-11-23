@@ -4,8 +4,8 @@
 //two test portfolios
 
 val blchip_portfolio = List("GOOG", "AAPL", "MSFT", "IBM", "FB", "YHOO", "AMZN", "BIDU")
-val rstate_portfolio = List("PLD", "PSA", "AMT", "AIV", "AVB", "BXP", "CBG", "CCI", 
-                            "DLR", "EQIX", "EQR", "ESS", "EXR", "FRT", "GGP", "HCP") 
+val rstate_portfolio = List("PLD", "PSA", "AMT", "AIV", "AVB", "BXP", "CBG", "CCI",
+  "DLR", "EQIX", "EQR", "ESS", "EXR", "FRT", "GGP", "HCP")
 
 // (1) The function below should obtain the first trading price
 // for a stock symbol by using the query
@@ -33,11 +33,7 @@ def get_prices(portfolio: List[String], years: Range): List[List[Option[Double]]
   for (year <- years) {
     var list = List[Option[Double]]()
     for (symbol <- 0 until portfolio.size) {
-      try {
-        list = list :+ get_first_price(portfolio(symbol), year)
-      } catch {
-        case e: Exception => None
-      }
+      list = list :+ get_first_price(portfolio(symbol), year)
     }
     listToReturn = listToReturn :+ list
   }
@@ -77,9 +73,9 @@ def get_deltas(data: List[List[Option[Double]]]):  List[List[Option[Double]]] = 
 
 
 // (3) Write a function that given change factors, a starting balance and a year
-// calculates the yearly yield, i.e. new balanace, according to our dump investment 
+// calculates the yearly yield, i.e. new balanace, according to our dump investment
 // strategy. Another function calculates given the same data calculates the
-// compound yield up to a given year. Finally a function combines all 
+// compound yield up to a given year. Finally a function combines all
 // calculations by taking a portfolio, a range of years and a start balance
 // as arguments.
 
